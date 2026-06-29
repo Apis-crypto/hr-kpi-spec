@@ -1,357 +1,163 @@
-openapi: 3.0.0
-
+openapi: "3.0.0"
 info:
-  title: HR KPI Portal — Supabase API
-  description: >
-    OpenAPI Spec สำหรับเชื่อมต่อ Retool กับ Supabase ของ HR KPI Portal
-    ครอบคลุมตาราง employees, performance_scores, leave_discipline_stats, portal_users
-  version: 1.0.0
-
+  title: "HR KPI Portal API"
+  version: "1.0.0"
 servers:
-  - url: https://hyhpioojtqyegtqziwur.supabase.co/rest/v1
-    description: Supabase REST API
-
-security:
-  - ApiKeyAuth: []
-  - BearerAuth: []
-
-# ==========================================
-# COMPONENTS — Schema และ Security
-# ==========================================
-components:
-
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: apikey
-    BearerAuth:
-      type: http
-      scheme: bearer
-
-  schemas:
-
-    # --- พนักงาน ---
-    Employee:
-      type: object
-      properties:
-        id:            { type: string, format: uuid }
-        emp_id:        { type: string, description: รหัสพนักงาน }
-        prefix:        { type: string, description: คำนำหน้า }
-        first_name:    { type: string, description: ชื่อ }
-        last_name:     { type: string, description: นามสกุล }
-        position:      { type: string, description: ตำแหน่ง }
-        eval_level:    { type: integer, description: ระดับเพื่อประเมิน }
-        personal_level:{ type: integer, description: ระดับบุคคล }
-        business_group:{ type: string, description: กลุ่มธุรกิจ }
-        division:      { type: string, description: สายงาน }
-        department:    { type: string, description: สำนัก }
-        section:       { type: string, description: ฝ่าย }
-        company:       { type: string, description: บริษัท }
-        workplace:     { type: string, description: สถานที่ทำงาน }
-        start_date:    { type: string, format: date, description: วันเริ่มงาน }
-        birth_date:    { type: string, format: date, description: วันเกิด }
-        service_years: { type: number, description: อายุงาน (ปี) }
-        age_years:     { type: integer, description: อายุ (ปี) }
-        work_status:   { type: string, description: Work Status }
-        emp_type:      { type: string, description: ประเภทพนักงาน }
-        chief_name:    { type: string, description: ชื่อหัวหน้า }
-        created_at:    { type: string, format: date-time }
-
-    # --- คะแนนประเมิน ---
-    PerformanceScore:
-      type: object
-      properties:
-        id:                    { type: string, format: uuid }
-        emp_id:                { type: string, description: รหัสพนักงาน }
-        eval_period:           { type: string, description: รอบประเมิน เช่น 2026-YEA }
-        kpi_score:             { type: number, description: คะแนน KPI }
-        global_values_score:   { type: number, description: คะแนน Global Values }
-        competency_score:      { type: number, description: คะแนน Competency }
-        total_score:           { type: number, description: คะแนนรวม }
-        rating:                { type: integer, description: Rating 1-5 }
-        deduction_pct:         { type: number, description: เปอร์เซ็นต์ที่ตัด }
-        final_score:           { type: number, description: คะแนนหลังตัด }
-        final_rating:          { type: integer, description: Rating หลังตัด }
-        implied_rating:        { type: string }
-        adjust_score_by_chief: { type: number, description: คะแนนที่ Chief ปรับ }
-        final_score_by_chief:  { type: number, description: คะแนนสุดท้ายโดย Chief }
-        final_rating_by_chief: { type: string, description: Rating สุดท้ายโดย Chief }
-        adjust_reason:         { type: string, description: เหตุผลการปรับ }
-        is_resigned:           { type: boolean, description: ลาออกแล้วหรือไม่ }
-        remark:                { type: string }
-        created_at:            { type: string, format: date-time }
-
-    # --- สถิติการลาและวินัย ---
-    LeaveDisciplineStat:
-      type: object
-      properties:
-        id:                          { type: string, format: uuid }
-        emp_id:                      { type: string }
-        eval_period:                 { type: string }
-        sick_leave_days:             { type: number, description: วันลาป่วย }
-        sick_leave_deduct_pct:       { type: number, description: เปอร์เซ็นต์ตัดลาป่วย }
-        personal_leave_days:         { type: number, description: วันลากิจ }
-        personal_leave_deduct_pct:   { type: number }
-        absent_days:                 { type: number, description: วันขาดงาน }
-        absent_deduct_pct:           { type: number }
-        military_leave_days:         { type: number, description: วันลารับราชการทหาร }
-        military_leave_deduct_pct:   { type: number }
-        maternity_leave_days:        { type: number, description: วันลาคลอด }
-        maternity_leave_deduct_pct:  { type: number }
-        work_injury_days:            { type: number, description: วันป่วยในงาน }
-        work_injury_deduct_pct:      { type: number }
-        unpaid_leave_days:           { type: number, description: วันลาไม่รับค่าจ้าง }
-        unpaid_leave_deduct_pct:     { type: number }
-        late_over30_times:           { type: integer, description: ครั้งที่มาสายเกิน 30 นาที }
-        late_over30_deduct_pct:      { type: number }
-        late_under30_times:          { type: integer, description: ครั้งที่มาสายไม่เกิน 30 นาที }
-        late_under30_deduct_pct:     { type: number }
-        verbal_warning_times:        { type: integer, description: ครั้งที่ตักเตือนวาจา }
-        verbal_warning_deduct_pct:   { type: number }
-        written_warning_times:       { type: integer, description: ครั้งที่ตักเตือนลายลักษณ์อักษร }
-        written_warning_deduct_pct:  { type: number }
-        created_at:                  { type: string, format: date-time }
-
-    # --- ผู้ใช้ระบบ ---
-    PortalUser:
-      type: object
-      properties:
-        id:         { type: string, format: uuid }
-        name:       { type: string, description: ชื่อผู้ใช้ }
-        role:       { type: string, enum: [admin, hr_officer, manager, director] }
-        division:   { type: string, description: สายงานที่ดูแล }
-        created_at: { type: string, format: date-time }
-
-# ==========================================
-# PATHS — API Endpoints ทั้งหมด
-# ==========================================
+  - url: "https://hyhpioojtqyegtqziwur.supabase.co/rest/v1"
 paths:
-
-  # ==================
-  # EMPLOYEES
-  # ==================
   /employees:
     get:
-      summary: ดึงข้อมูลพนักงานทั้งหมด
-      operationId: getEmployees
+      operationId: "getEmployees"
+      summary: "Get all employees"
       parameters:
-        - name: select
-          in: query
-          schema: { type: string }
-          example: "emp_id,first_name,last_name,division,position"
-          description: เลือก Column ที่ต้องการ (ละเว้น = ดึงทั้งหมด)
-        - name: division
-          in: query
-          schema: { type: string }
-          example: "eq.สายงานบริหาร"
-          description: กรองตามสายงาน เช่น eq.สายงานบริหาร
-        - name: order
-          in: query
-          schema: { type: string }
-          example: "last_name.asc"
-        - name: limit
-          in: query
-          schema: { type: integer }
-          example: 100
+        - name: "select"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "division"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "order"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "limit"
+          in: "query"
+          schema:
+            type: "integer"
       responses:
-        '200':
-          description: รายชื่อพนักงาน
+        "200":
+          description: "List of employees"
           content:
             application/json:
               schema:
-                type: array
-                items: { $ref: '#/components/schemas/Employee' }
-
+                type: "array"
+                items:
+                  type: "object"
     post:
-      summary: เพิ่มพนักงานใหม่
-      operationId: createEmployee
+      operationId: "createEmployee"
+      summary: "Create employee"
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/Employee' }
+            schema:
+              type: "object"
       responses:
-        '201': { description: สร้างสำเร็จ }
-
-  /employees/{emp_id}:
-    get:
-      summary: ดึงข้อมูลพนักงานรายคน
-      operationId: getEmployeeById
-      parameters:
-        - name: emp_id
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        '200':
-          description: ข้อมูลพนักงาน
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/Employee' }
-
-    patch:
-      summary: แก้ไขข้อมูลพนักงาน
-      operationId: updateEmployee
-      parameters:
-        - name: emp_id
-          in: path
-          required: true
-          schema: { type: string }
-      requestBody:
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/Employee' }
-      responses:
-        '200': { description: แก้ไขสำเร็จ }
-
-  # ==================
-  # PERFORMANCE SCORES
-  # ==================
+        "201":
+          description: "Created"
   /performance_scores:
     get:
-      summary: ดึงคะแนนประเมินผล
-      operationId: getPerformanceScores
+      operationId: "getPerformanceScores"
+      summary: "Get performance scores"
       parameters:
-        - name: emp_id
-          in: query
-          schema: { type: string }
-          example: "eq.EMP001"
-          description: กรองตามรหัสพนักงาน
-        - name: eval_period
-          in: query
-          schema: { type: string }
-          example: "eq.2026-YEA"
-          description: กรองตามรอบประเมิน
-        - name: select
-          in: query
-          schema: { type: string }
-          example: "emp_id,eval_period,total_score,final_rating"
-        - name: order
-          in: query
-          schema: { type: string }
-          example: "total_score.desc"
+        - name: "select"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "emp_id"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "eval_period"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "order"
+          in: "query"
+          schema:
+            type: "string"
       responses:
-        '200':
-          description: คะแนนประเมิน
+        "200":
+          description: "List of scores"
           content:
             application/json:
               schema:
-                type: array
-                items: { $ref: '#/components/schemas/PerformanceScore' }
-
+                type: "array"
+                items:
+                  type: "object"
     post:
-      summary: บันทึกคะแนนประเมินใหม่
-      operationId: createPerformanceScore
+      operationId: "createPerformanceScore"
+      summary: "Create performance score"
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/PerformanceScore' }
+            schema:
+              type: "object"
       responses:
-        '201': { description: บันทึกสำเร็จ }
-
-  /performance_scores/{id}:
-    patch:
-      summary: แก้ไขคะแนนประเมิน
-      operationId: updatePerformanceScore
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
-      requestBody:
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/PerformanceScore' }
-      responses:
-        '200': { description: แก้ไขสำเร็จ }
-
-  # ==================
-  # LEAVE & DISCIPLINE
-  # ==================
+        "201":
+          description: "Created"
   /leave_discipline_stats:
     get:
-      summary: ดึงสถิติการลาและวินัย
-      operationId: getLeaveDisciplineStats
+      operationId: "getLeaveDisciplineStats"
+      summary: "Get leave and discipline stats"
       parameters:
-        - name: emp_id
-          in: query
-          schema: { type: string }
-          example: "eq.EMP001"
-        - name: eval_period
-          in: query
-          schema: { type: string }
-          example: "eq.2026-YEA"
-        - name: select
-          in: query
-          schema: { type: string }
-          example: "emp_id,sick_leave_days,absent_days,late_over30_times"
+        - name: "select"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "emp_id"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "eval_period"
+          in: "query"
+          schema:
+            type: "string"
       responses:
-        '200':
-          description: สถิติการลา
+        "200":
+          description: "List of stats"
           content:
             application/json:
               schema:
-                type: array
-                items: { $ref: '#/components/schemas/LeaveDisciplineStat' }
-
+                type: "array"
+                items:
+                  type: "object"
     post:
-      summary: บันทึกสถิติการลาใหม่
-      operationId: createLeaveDisciplineStat
+      operationId: "createLeaveDisciplineStat"
+      summary: "Create leave discipline stat"
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/LeaveDisciplineStat' }
+            schema:
+              type: "object"
       responses:
-        '201': { description: บันทึกสำเร็จ }
-
-  /leave_discipline_stats/{id}:
-    patch:
-      summary: แก้ไขสถิติการลา
-      operationId: updateLeaveDisciplineStat
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
-      requestBody:
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/LeaveDisciplineStat' }
-      responses:
-        '200': { description: แก้ไขสำเร็จ }
-
-  # ==================
-  # PORTAL USERS
-  # ==================
+        "201":
+          description: "Created"
   /portal_users:
     get:
-      summary: ดึงรายชื่อผู้ใช้ระบบ
-      operationId: getPortalUsers
+      operationId: "getPortalUsers"
+      summary: "Get portal users"
       parameters:
-        - name: role
-          in: query
-          schema: { type: string }
-          example: "eq.hr_officer"
-          description: กรองตาม Role
+        - name: "select"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "role"
+          in: "query"
+          schema:
+            type: "string"
       responses:
-        '200':
-          description: รายชื่อผู้ใช้
+        "200":
+          description: "List of users"
           content:
             application/json:
               schema:
-                type: array
-                items: { $ref: '#/components/schemas/PortalUser' }
-
+                type: "array"
+                items:
+                  type: "object"
     post:
-      summary: เพิ่มผู้ใช้ระบบใหม่
-      operationId: createPortalUser
+      operationId: "createPortalUser"
+      summary: "Create portal user"
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/PortalUser' }
+            schema:
+              type: "object"
       responses:
-        '201': { description: สร้างสำเร็จ }
+        "201":
+          description: "Created"
